@@ -8,7 +8,6 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -18,14 +17,119 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Divider from "@material-ui/core/Divider";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import InboxIcon from "@material-ui/icons/MoveToInbox";
+import MailIcon from "@material-ui/icons/Mail";
+import {
+  createStyles,
+  makeStyles,
+  useTheme,
+  Theme,
+} from "@material-ui/core/styles";
+import clsx from "clsx";
+
+const drawerWidth = 240;
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: "flex",
+    },
+    appBar: {
+      zIndex: theme.zIndex.drawer + 1,
+      transition: theme.transitions.create(["width", "margin"], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+    },
+    appBarShift: {
+      marginLeft: drawerWidth,
+      width: `calc(100% - ${drawerWidth}px)`,
+      transition: theme.transitions.create(["width", "margin"], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
+    menuButton: {
+      marginRight: 36,
+    },
+    hide: {
+      display: "none",
+    },
+    drawer: {
+      width: drawerWidth,
+      flexShrink: 0,
+      whiteSpace: "nowrap",
+    },
+    drawerOpen: {
+      width: drawerWidth,
+      transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
+    drawerClose: {
+      transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+      overflowX: "hidden",
+      width: theme.spacing(7) + 1,
+      [theme.breakpoints.up("sm")]: {
+        width: theme.spacing(9) + 1,
+      },
+    },
+    toolbar: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "flex-end",
+      padding: theme.spacing(0, 1),
+      // necessary for content to be below app bar
+      ...theme.mixins.toolbar,
+    },
+    content: {
+      flexGrow: 1,
+      padding: theme.spacing(3),
+    },
+  })
+);
+
+const useMediaQuery = (
+  query: string,
+  defaultState: boolean = false
+): boolean => {
+  const [state, setState] = React.useState(defaultState);
+
+  React.useEffect(() => {
+    let mounted = true;
+    const mql = window.matchMedia(query);
+    const onChange = () => {
+      if (!mounted) return;
+      setState(!!mql.matches);
+    };
+
+    mql.addListener(onChange);
+    setState(mql.matches);
+
+    return () => {
+      mounted = false;
+      mql.removeListener(onChange);
+    };
+  }, [query]);
+
+  return state;
+};
+const usePrevious = (value) => {
+  const ref = React.useRef(null);
+  React.useEffect(() => void (ref.current = value), [value]);
+  return ref.current;
+};
 
 function Home(props) {
-  const useStyles = makeStyles({
-    drawer: {
-      width: 250,
-    },
-  });
-
   const [fname, setfname] = useState("");
   const [lname, setLname] = useState("");
   const [mnumber, setMnumber] = useState("");
@@ -55,13 +159,13 @@ function Home(props) {
     fd.append("pincode", pincode);
     fd.append("cname", cname);
     fd.append("file", file);
-    // for (var pair of formData.entries()) {
-    //   console.log("formdata--->", pair);
-    // }
 
-    const {data} = await axios.post("http://localhost:5001/employee/save", fd);
+    const { data } = await axios.post(
+      "http://localhost:5001/employee/save",
+      fd
+    );
     console.log("response", data);
-    if(data) {
+    if (data) {
       window.confirm("Employee Details Saved SuccessFully!!");
       setfname("");
       setLname("");
@@ -93,7 +197,7 @@ function Home(props) {
 
   const editHandler = async (row) => {
     console.log("row", row);
-    navigate('/edithome/' + row._id)
+    navigate("/edithome/" + row._id);
     // await axios.put(`http://localhost:5001/employee/edit/${row.id}`);
   };
 
@@ -102,9 +206,6 @@ function Home(props) {
       await axios.delete(`http://localhost:5001/employee/delete/${row.id}`);
     }
   };
-
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const classes = useStyles();
 
   const columns = [
     {
@@ -174,189 +275,247 @@ function Home(props) {
     },
   ];
 
-  const container =
-    window !== undefined ? () => window().document.body : undefined;
+  const classes = useStyles();
+  const theme = useTheme();
+  const [open, setOpen] = React.useState(false);
+
+  const isBigScreen = useMediaQuery("(min-width: 1140px)", false);
+  const prevBigScreen = usePrevious(isBigScreen);
+  React.useEffect(() => {
+    if (isBigScreen !== prevBigScreen && isBigScreen !== open) {
+      setOpen((prev) => !prev);
+    }
+  }, [isBigScreen, prevBigScreen, open]);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
   return (
     <>
-      <AppBar variant="outlined">
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={() => setIsDrawerOpen(true)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6">Employee Management Application</Typography>
-
-          <Drawer open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
-            <List className={classes.drawer}>
-              <ListItem button>
-                <ListItemText primary="Home" />
-              </ListItem>
-
-              <ListItem button>
-                <ListItemText primary="About" />
-              </ListItem>
-
-              <ListItem button>
-                <ListItemText primary="Contact" />
-              </ListItem>
-
-              <ListItem button>
-                <ListItemText primary="Services" />
-              </ListItem>
-            </List>
-          </Drawer>
-        </Toolbar>
-      </AppBar>
-
-      <Box sx={{ mt: 20 }} onSubmit={submitHandler}>
-        <h1>Employee Portal</h1>
-        <Box component="form" sx={{ m: 5, p: 2 }}>
-          <TextField
-            sx={{ mr: 4 }}
-            id="margin-normal"
-            label="First Name"
-            value={fname}
-            onChange={(e) => setfname(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            sx={{ mr: 4 }}
-            id="margin-normal"
-            label="Last Name"
-            value={lname}
-            onChange={(e) => setLname(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            sx={{ mr: 4 }}
-            id="margin-normal"
-            label="Mobile Number"
-            value={mnumber}
-            onChange={(e) => setMnumber(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            sx={{ mr: 4 }}
-            id="margin-normal"
-            label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            sx={{ mr: 4 }}
-            id="margin-normal"
-            label="Address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            sx={{ mr: 4 }}
-            id="margin-normal"
-            label="Address 2"
-            value={address2}
-            onChange={(e) => setAddress2(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            sx={{ mr: 4 }}
-            id="margin-normal"
-            label="City"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            sx={{ mr: 4 }}
-            id="margin-normal"
-            label="State"
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            sx={{ mr: 4 }}
-            id="margin-normal"
-            label="Pin Code"
-            value={pincode}
-            onChange={(e) => setPincode(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            sx={{ mr: 4 }}
-            id="margin-normal"
-            label="Company Name"
-            value={cname}
-            onChange={(e) => setCname(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            sx={{ mr: 4 }}
-            id="margin-normal"
-            type="file"
-            onChange={handleChange}
-            margin="normal"
-          />
-
-          <Button sx={{ mt: 10 }} type="submit" variant="contained">
-            Submit
-          </Button>
-        </Box>
-      </Box>
-
-      <Box
-        sx={{
-          height: 560,
-          width: "100%",
-
-          "& .super-app-theme--header": {
-            backgroundColor: "#808080",
-            color: "#ffffff",
-          },
-          "& .css-1jbbcbn-MuiDataGrid-columnHeaderTitle": {
-            fontSize: 16,
-          },
-          ".css-o8hwua-MuiDataGrid-root .MuiDataGrid-cellContent": {
-            fontSize: 13,
-          },
-          ".css-bfht93-MuiDataGrid-root .MuiDataGrid-columnHeader--alignCenter .MuiDataGrid-columnHeaderTitleContainer":
-            {
-              backgroundColor: "#330033",
-              color: "#ffffff",
-            },
-          ".css-h4y409-MuiList-root": {
-            display: "grid",
-          },
-          ".css-1omg972-MuiDataGrid-root .MuiDataGrid-columnHeader--alignCenter .MuiDataGrid-columnHeaderTitleContainer":
-            {
-              backgroundColor: "#808080",
-            },
-            ".css-1usso8h-MuiDataGrid-root .MuiDataGrid-columnHeaderTitleContainer":
-            {
-              backgroundColor: "#808080",
-            }
-        }}
-      >
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          getRowId={(rows) => rows._id}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-              },
-            },
+      <div className={classes.root}>
+        <CssBaseline />
+        <AppBar
+          position="fixed"
+          className={clsx(classes.appBar, {
+            [classes.appBarShift]: open,
+          })}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              className={clsx(classes.menuButton, {
+                [classes.hide]: open,
+              })}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap>
+              Mini variant drawer
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          variant="permanent"
+          className={clsx(classes.drawer, {
+            [classes.drawerOpen]: open,
+            [classes.drawerClose]: !open,
+          })}
+          classes={{
+            paper: clsx({
+              [classes.drawerOpen]: open,
+              [classes.drawerClose]: !open,
+            }),
           }}
-          pageSizeOptions={[5]}
-          checkboxSelection
-        />
-      </Box>
+        >
+          <div className={classes.toolbar}>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === "rtl" ? (
+                <ChevronRightIcon />
+              ) : (
+                <ChevronLeftIcon />
+              )}
+            </IconButton>
+          </div>
+          <Divider />
+          <List>
+            {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+              <ListItem button key={text}>
+                <ListItemIcon>
+                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            {["All mail", "Trash", "Spam"].map((text, index) => (
+              <ListItem button key={text}>
+                <ListItemIcon>
+                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            ))}
+          </List>
+        </Drawer>
+        <main className={classes.content}>
+          <div className={classes.toolbar} />
+          <Box onSubmit={submitHandler}>
+            <h1>Employee Portal</h1>
+            <Box component="form" sx={{ m: 5, p: 2 }}>
+              <TextField
+                sx={{ mr: 4 }}
+                id="margin-normal"
+                label="First Name"
+                value={fname}
+                onChange={(e) => setfname(e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                sx={{ mr: 4 }}
+                id="margin-normal"
+                label="Last Name"
+                value={lname}
+                onChange={(e) => setLname(e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                sx={{ mr: 4 }}
+                id="margin-normal"
+                label="Mobile Number"
+                value={mnumber}
+                onChange={(e) => setMnumber(e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                sx={{ mr: 4 }}
+                id="margin-normal"
+                label="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                sx={{ mr: 4 }}
+                id="margin-normal"
+                label="Address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                sx={{ mr: 4 }}
+                id="margin-normal"
+                label="Address 2"
+                value={address2}
+                onChange={(e) => setAddress2(e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                sx={{ mr: 4 }}
+                id="margin-normal"
+                label="City"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                sx={{ mr: 4 }}
+                id="margin-normal"
+                label="State"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                sx={{ mr: 4 }}
+                id="margin-normal"
+                label="Pin Code"
+                value={pincode}
+                onChange={(e) => setPincode(e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                sx={{ mr: 4 }}
+                id="margin-normal"
+                label="Company Name"
+                value={cname}
+                onChange={(e) => setCname(e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                sx={{ mr: 4 }}
+                id="margin-normal"
+                type="file"
+                onChange={handleChange}
+                margin="normal"
+              />
+
+              <Button sx={{ mt: 10 }} type="submit" variant="contained">
+                Submit
+              </Button>
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              height: 560,
+              width: "100%",
+
+              "& .super-app-theme--header": {
+                backgroundColor: "#808080",
+                color: "#ffffff",
+              },
+              "& .css-1jbbcbn-MuiDataGrid-columnHeaderTitle": {
+                fontSize: 16,
+              },
+              ".css-o8hwua-MuiDataGrid-root .MuiDataGrid-cellContent": {
+                fontSize: 13,
+              },
+              ".css-bfht93-MuiDataGrid-root .MuiDataGrid-columnHeader--alignCenter .MuiDataGrid-columnHeaderTitleContainer":
+                {
+                  backgroundColor: "#330033",
+                  color: "#ffffff",
+                },
+              ".css-h4y409-MuiList-root": {
+                display: "grid",
+              },
+              ".css-1omg972-MuiDataGrid-root .MuiDataGrid-columnHeader--alignCenter .MuiDataGrid-columnHeaderTitleContainer":
+                {
+                  backgroundColor: "#808080",
+                },
+              ".css-1usso8h-MuiDataGrid-root .MuiDataGrid-columnHeaderTitleContainer":
+                {
+                  backgroundColor: "#808080",
+                },
+            }}
+          >
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              getRowId={(rows) => rows._id}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 10,
+                  },
+                },
+              }}
+              pageSizeOptions={[5]}
+              checkboxSelection
+            />
+          </Box>
+        </main>
+      </div>
     </>
   );
 }

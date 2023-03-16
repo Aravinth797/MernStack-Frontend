@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import Registration from "./components/Registration";
 import Home from "./components/Home";
 import EditHome from "./components/EditHome";
+import Nav from "./components/Nav";
 
 function App() {
   return (
@@ -14,7 +15,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="home" element={<Home />} />
-          <Route path="edithome" element={<EditHome />} />
+          <Route path="nav" element={<Nav/>} />
+          <Route path="edithome/:id" element={<EditHome />} />
           <Route path="register" element={<Registration />} />
           <Route path="add" element={<AddUser />} />
           <Route path="edit/:id" element={<EditUser />} />

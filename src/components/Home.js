@@ -59,8 +59,22 @@ function Home(props) {
     //   console.log("formdata--->", pair);
     // }
 
-    await axios.post("http://localhost:5001/employee/save", fd);
-    window.confirm("Employee Details Saved SuccessFully!!");
+    const {data} = await axios.post("http://localhost:5001/employee/save", fd);
+    console.log("response", data);
+    if(data) {
+      window.confirm("Employee Details Saved SuccessFully!!");
+      setfname("");
+      setLname("");
+      setMnumber("");
+      setEmail("");
+      setAddress("");
+      setAddress2("");
+      setCity("");
+      setState("");
+      setPincode("");
+      setCname("");
+      setFile("");
+    }
   };
 
   function handleChange(event) {
@@ -72,14 +86,15 @@ function Home(props) {
       // You can await here
       const { data } = await axios.get("http://localhost:5001/employee/get");
       setRows(data);
-      console.log("data", data);
+      // console.log("data", data);
     }
     fetchData();
   }, []);
 
   const editHandler = async (row) => {
-    navigate('/edithome')
-    await axios.put(`http://localhost:5001/employee/edit/${row.id}`);
+    console.log("row", row);
+    navigate('/edithome/' + row._id)
+    // await axios.put(`http://localhost:5001/employee/edit/${row.id}`);
   };
 
   const deleteHandler = async (row) => {
@@ -321,6 +336,10 @@ function Home(props) {
             {
               backgroundColor: "#808080",
             },
+            ".css-1usso8h-MuiDataGrid-root .MuiDataGrid-columnHeaderTitleContainer":
+            {
+              backgroundColor: "#808080",
+            }
         }}
       >
         <DataGrid
@@ -330,13 +349,12 @@ function Home(props) {
           initialState={{
             pagination: {
               paginationModel: {
-                pageSize: 5,
+                pageSize: 10,
               },
             },
           }}
           pageSizeOptions={[5]}
           checkboxSelection
-          disableRowSelectionOnClick
         />
       </Box>
     </>

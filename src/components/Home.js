@@ -256,20 +256,43 @@ function Home(props) {
       headerClassName: "super-app-theme--header",
       renderCell: (params) => (
         <>
-          <EditIcon
-            onClick={() => editHandler(params.row)}
+          <button
             style={{
-              color: deepPurple[500],
-              fontSize: 15,
-              margin: 20,
+              backgroundColor: "green",
+              fontSize: "15px",
+              border: "none",
+              color: "white",
+              padding: "8px 16px",
+              textAlign: "center",
+              textDecoration: "none",
+              display: "inline-block",
+              margin: "2px 1px",
               cursor: "pointer",
+              borderRadius: "5px",
             }}
-          />
-
-          <DeleteIcon
+            onClick={() => editHandler(params.row)}
+          >
+            Edit
+          </button>
+          <button
+            style={{
+              backgroundColor: "red",
+              fontSize: "15px",
+              border: "none",
+              color: "white",
+              padding: "8px 16px",
+              textAlign: "center",
+              textDecoration: "none",
+              display: "inline-block",
+              margin: "2px 1px",
+              marginRight: "5px",
+              cursor: "pointer",
+              borderRadius: "5px",
+            }}
             onClick={() => deleteHandler(params)}
-            style={{ color: red[500], fontSize: 15, cursor: "pointer" }}
-          />
+          >
+            Delete
+          </button>
         </>
       ),
     },
@@ -318,7 +341,7 @@ function Home(props) {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap>
-              Mini variant drawer
+              HRP
             </Typography>
           </Toolbar>
         </AppBar>

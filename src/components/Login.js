@@ -1,21 +1,32 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  
+  const navigate = useNavigate();
+  
   const saveLogin = async (e) => {
     e.preventDefault();
-    try {
-      await axios.post("http://localhost:5001/admin/signin", {
-        email,
-        password,
-      });
-    } catch (error) {
-      console.log(error);
+    if(email == "admin1@example.com" && password == "1234") {
+      navigate("home");
     }
+    else if (email == "hari@gmail.com" && password == "1234") {
+      navigate("home");
+    }
+    else {
+      window.confirm("Invalid User");
+    }
+    // try {
+    //   await axios.post("http://localhost:5001/admin/signin", {
+    //     email,
+    //     password,
+    //   });
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
 
   return (
@@ -46,14 +57,12 @@ const Login = () => {
                 <a href="forget.html">forget password?</a>
               </div>
               <div className="column">
-                <Link to="home">
                   <button
                     className="button is-primary is-fullwidth"
                     type="submit"
                   >
                     Login
                   </button>
-                </Link>
               </div>
               <div className="has-text-centered">
                 <Link to="register">

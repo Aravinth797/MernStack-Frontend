@@ -12,9 +12,6 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import axios from "axios";
-import { deepPurple, red } from "@material-ui/core/colors";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -207,6 +204,30 @@ function Home(props) {
     }
   };
 
+  const viewHandler = async (event) => {
+    console.log("event", event.photo);
+    if (event.photo) {
+      let text = event.photo;
+      let fname = text.split("/");
+      axios
+        .get(`http://localhost:5001/employee/${fname[1]}`)
+        .then((response) => {
+          // console.log("response", response.data);
+          // response?.data?.blob().then((blob) => {
+          //   let url = URL.createObjectURL(blob, "blob");
+          //   console.log("url", url);
+          //   window.open(url, "_blank");
+          // });
+          const file = new Blob([response.data], { type: 'blob' });
+          console.log("file----->", file);
+          const fileURL = URL.createObjectURL(file);
+          console.log("fileURL----->", fileURL);
+          window.open(fileURL);
+        });
+    } else {
+      window.confirm("Error While Fetching!!");
+    }
+  };
   const columns = [
     {
       field: "_id",
@@ -248,6 +269,28 @@ function Home(props) {
       flex: 1,
       editable: true,
       headerClassName: "super-app-theme--header",
+      renderCell: (params) => (
+        <>
+          <button
+            style={{
+              backgroundColor: "blue",
+              fontSize: "15px",
+              border: "none",
+              color: "white",
+              padding: "8px 16px",
+              textAlign: "center",
+              textDecoration: "none",
+              display: "inline-block",
+              margin: "2px 1px",
+              cursor: "pointer",
+              borderRadius: "5px",
+            }}
+            onClick={() => viewHandler(params.row)}
+          >
+            View
+          </button>
+        </>
+      ),
     },
     {
       field: "actions",
@@ -324,6 +367,7 @@ function Home(props) {
         <CssBaseline />
         <AppBar
           position="fixed"
+          style={{ backgroundColor: "#808080" }}
           className={clsx(classes.appBar, {
             [classes.appBarShift]: open,
           })}
@@ -341,7 +385,7 @@ function Home(props) {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap>
-              HRP
+              ANDAVAR ERP
             </Typography>
           </Toolbar>
         </AppBar>
@@ -369,7 +413,7 @@ function Home(props) {
           </div>
           <Divider />
           <List>
-            {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+            {["Employee", "Bank", "Financial", "Drafts"].map((text, index) => (
               <ListItem button key={text}>
                 <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}

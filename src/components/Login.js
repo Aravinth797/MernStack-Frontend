@@ -11,9 +11,13 @@ const Login = () => {
   const saveLogin = async (e) => {
     e.preventDefault();
     if(email == "admin1@example.com" && password == "1234") {
+      sessionStorage.setItem('email', email);
+      sessionStorage.setItem('password', password);
       navigate("home");
     }
     else if (email == "hari@gmail.com" && password == "1234") {
+      sessionStorage.setItem('email', email);
+      sessionStorage.setItem('password', password);
       navigate("home");
     }
     else {

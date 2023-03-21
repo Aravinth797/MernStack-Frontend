@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
+  console.log("email", email);
   const [password, setPassword] = useState("");
   
   const navigate = useNavigate();
@@ -16,6 +17,11 @@ const Login = () => {
       navigate("home");
     }
     else if (email == "hari@gmail.com" && password == "1234") {
+      sessionStorage.setItem('email', email);
+      sessionStorage.setItem('password', password);
+      navigate("home");
+    }
+    else if (email == "gnanavel@gmail.com" && password == "1111") {
       sessionStorage.setItem('email', email);
       sessionStorage.setItem('password', password);
       navigate("home");

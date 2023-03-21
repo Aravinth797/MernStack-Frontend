@@ -207,23 +207,18 @@ function Home(props) {
   const viewHandler = async (event) => {
     console.log("event", event.photo);
     if (event.photo) {
-      let text = event.photo;
+      let text = event.photo
+      console.log("text-------->", text);
       let fname = text.split("/");
-      axios
-        .get(`http://localhost:5001/employee/${fname[1]}`)
-        .then((response) => {
-          // console.log("response", response.data);
-          // response?.data?.blob().then((blob) => {
-          //   let url = URL.createObjectURL(blob, "blob");
-          //   console.log("url", url);
-          //   window.open(url, "_blank");
-          // });
-          const file = new Blob([response.data], { type: 'blob' });
-          console.log("file----->", file);
-          const fileURL = URL.createObjectURL(file);
-          console.log("fileURL----->", fileURL);
-          window.open(fileURL);
+      fetch(
+        `http://localhost:5001/employee/${fname[1]}`
+      ).then((response) => {
+        console.log("response------->", response);
+        response.blob().then((blob) => {
+          let url = URL.createObjectURL(blob, 'application/pdf');
+          window.open(url);
         });
+      });
     } else {
       window.confirm("Error While Fetching!!");
     }
@@ -413,14 +408,16 @@ function Home(props) {
           </div>
           <Divider />
           <List>
-            {["Employee", "Bank", "Financial", "Drafts"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
+            {["Employee", "Bank", "Financial", "Drafts", "ajax", "Bank"].map(
+              (text, index) => (
+                <ListItem button key={text}>
+                  <ListItemIcon>
+                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={text} />
+                </ListItem>
+              )
+            )}
           </List>
           <Divider />
           <List>

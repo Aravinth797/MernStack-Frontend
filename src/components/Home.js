@@ -28,6 +28,7 @@ import {
   Theme,
 } from "@material-ui/core/styles";
 import clsx from "clsx";
+import { Link } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -207,15 +208,13 @@ function Home(props) {
   const viewHandler = async (event) => {
     console.log("event", event.photo);
     if (event.photo) {
-      let text = event.photo
+      let text = event.photo;
       console.log("text-------->", text);
       let fname = text.split("/");
-      fetch(
-        `http://localhost:5001/employee/${fname[1]}`
-      ).then((response) => {
+      fetch(`http://localhost:5001/employee/${fname[1]}`).then((response) => {
         console.log("response------->", response);
         response.blob().then((blob) => {
-          let url = URL.createObjectURL(blob, 'application/pdf');
+          let url = URL.createObjectURL(blob, "application/pdf");
           window.open(url);
         });
       });
@@ -379,9 +378,9 @@ function Home(props) {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap>
-              ANDAVAR ERP
-            </Typography>
+              <Typography variant="h6" noWrap sx={{color: "white"}}>
+                Andavar ERP
+              </Typography>
           </Toolbar>
         </AppBar>
         <Drawer

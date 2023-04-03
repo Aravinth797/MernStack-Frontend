@@ -145,7 +145,7 @@ const EditHome = () => {
   const [cname, setCname] = useState("");
   const [file, setFile] = useState();
   const [rows, setRows] = useState("");
-
+  const navigate = useNavigate();
   useEffect(() => {
     getUserById();
     async function fetchData() {
@@ -171,6 +171,36 @@ const EditHome = () => {
     setPincode(response.data.pincode);
     setCname(response.data.cname);
     setFile(response.data.photo);
+  };
+
+  const editIDHandler = async (row) => {
+    console.log("row", row);
+    navigate("/edithome/" + row._id);
+    // await axios.put(`http://localhost:5001/employee/edit/${row.id}`);
+  };
+
+  const deleteHandler = async (row) => {
+    if (window.confirm("Are you sure to delete?")) {
+      await axios.delete(`http://localhost:5001/employee/delete/${row.id}`);
+    }
+  };
+
+  const viewHandler = async (event) => {
+    console.log("event", event.photo);
+    if (event.photo) {
+      let text = event.photo;
+      console.log("text-------->", text);
+      let fname = text.split("/");
+      fetch(`http://localhost:5001/employee/${fname[1]}`).then((response) => {
+        console.log("response------->", response);
+        response.blob().then((blob) => {
+          let url = URL.createObjectURL(blob, "application/pdf");
+          window.open(url);
+        });
+      });
+    } else {
+      window.confirm("Error While Fetching!!");
+    }
   };
 
   const columns = [
@@ -214,6 +244,75 @@ const EditHome = () => {
       flex: 1,
       editable: true,
       headerClassName: "super-app-theme--header",
+      renderCell: (params) => (
+        <>
+          <button
+            style={{
+              backgroundColor: "blue",
+              fontSize: "15px",
+              border: "none",
+              color: "white",
+              padding: "8px 16px",
+              textAlign: "center",
+              textDecoration: "none",
+              display: "inline-block",
+              margin: "2px 1px",
+              cursor: "pointer",
+              borderRadius: "5px",
+            }}
+            onClick={() => viewHandler(params.row)}
+          >
+            View
+          </button>
+        </>
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "ACTIONS",
+      flex: 1,
+      headerClassName: "super-app-theme--header",
+      renderCell: (params) => (
+        <>
+          <button
+            style={{
+              backgroundColor: "green",
+              fontSize: "15px",
+              border: "none",
+              color: "white",
+              padding: "8px 16px",
+              textAlign: "center",
+              textDecoration: "none",
+              display: "inline-block",
+              margin: "2px 1px",
+              cursor: "pointer",
+              borderRadius: "5px",
+            }}
+            onClick={() => editIDHandler(params.row)}
+          >
+            Edit
+          </button>
+          <button
+            style={{
+              backgroundColor: "red",
+              fontSize: "15px",
+              border: "none",
+              color: "white",
+              padding: "8px 16px",
+              textAlign: "center",
+              textDecoration: "none",
+              display: "inline-block",
+              margin: "2px 1px",
+              marginRight: "5px",
+              cursor: "pointer",
+              borderRadius: "5px",
+            }}
+            onClick={() => deleteHandler(params)}
+          >
+            Delete
+          </button>
+        </>
+      ),
     },
   ];
 
@@ -300,9 +399,9 @@ const EditHome = () => {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap>
-              Mini variant drawer
-            </Typography>
+              <Typography variant="h6" noWrap>
+                Andavar ERP
+              </Typography>
           </Toolbar>
         </AppBar>
         <Drawer
